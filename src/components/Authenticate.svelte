@@ -1,14 +1,32 @@
 <script>
+    import { authHandlers } from "../store/store";
+
     let email = "";
     let password = "";
     let confirmPass = "";
     let error = false;
     let register = false;
+    let authenticating = false;
 
-    function handleAutheticate(){
+    async function handleAutheticate(){
+        if (authenticating) {
+            return;
+        }
         if(!email || !password || (register && !confirmPass)){
             error = true;
             return
+        }
+        
+        authenticating = true;
+        try {
+            if (!register) {
+                await authHandlers.login(email, password);
+            } else {
+                await authHandlers.signup(email, password);
+            }
+        } catch(err) {
+            console.log("There was an auth error", err);
+            error = true;
         }
     }
 
@@ -37,7 +55,13 @@
             <input bind:value={confirmPass} type="password" placeholder="Confirm Password" />
         </label>
         {/if}
-        <button type="button">Submit</button>
+        <button  on:click={handleAutheticate} type="button" class="submitBtn">
+            {#if authenticating}
+            <i class="fa-solid fa-spinner spin"></i>
+            {:else}
+            Submit
+            {/if}
+        </button>
     </form>
     <div class="options">
         <p>Or</p>
@@ -47,7 +71,7 @@
                 <p on:click={handleRegister} on:keydown={() => {}}>Login</p>
             </div>
         {:else}
-            <div>
+            <div> 
                 <p>Don't have an account?</p>
                 <p on:click={handleRegister} on:keydown={() => {}}>Register</p>
             </div>
@@ -116,6 +140,8 @@
         border-radius: 5px;
         cursor: pointer;
         font-size: 1rem;
+        display: grid;
+        place-items: center;
     }
 
     form button:hover {
@@ -151,6 +177,7 @@
     .error {
         color: coral;
         font-size: 0.9rem;
+        text-align: center;
     }
 
     .options {
@@ -196,6 +223,19 @@
     .options div p:last-of-type{
         color: cyan;
         cursor: pointer;
+    }
+
+    .spin {
+        animation: spin 2s infinite;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 
 

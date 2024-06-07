@@ -1,4 +1,6 @@
 <script>
+    import { authHandlers, authStore } from "../../store/store";
+
     let todoList = ["Do the groceries"];
     let currTodo = "";
     let error = false;
@@ -33,7 +35,10 @@
         <h1>Todo List</h1>
         <div class="headerbtns">
             <button><i class="fa-regular fa-floppy-disk"></i>Save</button>
-            <button><i class="fa-solid fa-arrow-right-from-bracket"></i>Logout</button>
+            <button on:click={authHandlers.logout} type="button">
+                <i class="fa-solid fa-arrow-right-from-bracket" />
+                <p>Logout</p>
+            </button>
         </div>
     </div>
     <main>
